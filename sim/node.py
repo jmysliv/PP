@@ -25,6 +25,8 @@ class Node:
                 if len(self.job_queue) == 0:
                     return 
                 self.current_job = self.job_queue.pop(0)
+                self.current_job.start_executing(current_time=current_time)
+
             demand = self.current_job.get_demand()
             if demand < instructions_left_in_cycle:
                 self.current_job.execute(demand, current_time)

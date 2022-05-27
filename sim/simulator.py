@@ -1,6 +1,9 @@
 from job import Job
 from manager import Manager
 from node import Node
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 class Simulator:
     def __init__(self, jobs: list[Job], nodes: list[Node], manager: Manager):
@@ -14,7 +17,6 @@ class Simulator:
         while True:
             if len(self.jobs) > self.current_job:
                 job = self.jobs[self.current_job]
-                print(f'job submit time: {job.get_submit_time()}')
                 while job.get_submit_time() == self.current_time:
                     node = self.manager.find_node(job)
                     node.add_job(job, self.current_time)
@@ -29,11 +31,18 @@ class Simulator:
                 if node.execute_jobs(self.current_time):
                     nodes_working = True
             
-            print(f'nodes working: {nodes_working}')
-            print(f'current job: {self.current_job}')
             if not nodes_working and len(self.jobs) <= self.current_job:
+                stats = []
                 for job in self.jobs:
-                    print(job.get_stats())
+                    stats.append(job.get_stats())
+                np_stats = np.array(stats)
+                means = np.mean(np_stats, axis=0)
+                fig = plt.figure(figsize=(16, 12))
+                plt.title = 'Times'
+                plt.ylabel('Time [s]')
+                plt.bar(['Wait time', 'Run time'], means)
+                plt.savefig(f'outputs/times.png')
+                plt.close()
                 return
             
             self.current_time += 1
