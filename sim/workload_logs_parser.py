@@ -7,6 +7,7 @@ FEATURES_NUMBER = 18
 class WorkloadLogsParser:
     def __init__(self, filename):
         self.filename = filename
+        self.train_data = []
 
     def get_jobs(self, size) -> list[Job]:
         with open(self.filename, 'r+', encoding='utf-8') as f:
@@ -23,9 +24,13 @@ class WorkloadLogsParser:
         df = pd.DataFrame(np_data, columns=labels)
 
         jobs_to_parse = df.iloc[:size, :]
+        self.train_data = df.iloc[size:, :]
         jobs = []
         for index, row in jobs_to_parse.iterrows():
             job = Job(row['submit time'], index, row['user id'], row['run time'], row['cpu used'], row['memory used'])
             jobs.append(job)
 
         return jobs
+
+    def get_train_data(self):
+        return self.train_data

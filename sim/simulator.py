@@ -41,7 +41,7 @@ class Simulator:
                 plt.title = 'Times'
                 plt.ylabel('Time [s]')
                 plt.bar(['Wait time', 'Run time'], means)
-                plt.savefig(f'outputs/times.png')
+                plt.savefig(f'outputs/kmeans_times.png')
                 plt.close()
                 return
             
