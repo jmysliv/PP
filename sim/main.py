@@ -1,28 +1,25 @@
 from node import Node
-from kmeans_manager import KmeansManager
+from pretrained_manager import PretrainedManager
 from workload_logs_parser import WorkloadLogsParser
 from dummy_manager import DummyManager
 from simulator import Simulator
 
 if __name__ == '__main__':
-    parser = WorkloadLogsParser('../test2.txt')
+    parser = WorkloadLogsParser('../test2.txt', 1000)
 
     # nodes
-    node1 = Node(1, 100, 100)
-    node2 = Node(2, 200, 200)
-    node3 = Node(5, 10, 10)
-    node4 = Node(10, 10, 10)
-    nodes = [node1, node2, node3, node4]
-
-    # jobs
-    jobs = parser.get_jobs(100)
+    node1 = Node(100, 50)
+    node2 = Node(1000, 1500)
+    nodes = [node1, node2]
 
     # manager
-    # manager = DummyManager([], nodes)
-    manager = KmeansManager(parser.get_train_data(), nodes)
+    manager = DummyManager([], nodes)
+    pretrainedManager = PretrainedManager(parser.get_train_data(), nodes)
 
     # simulator
-    simulator = Simulator(jobs, nodes, manager)
+    simulator1 = Simulator(parser.get_jobs(), nodes, manager)
+    simulator2 = Simulator(parser.get_jobs(), nodes, pretrainedManager)
 
-    simulator.simulate()
+    simulator1.simulate("dummy_times.png")
+    simulator2.simulate("pretrained_times.png")
     

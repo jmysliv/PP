@@ -5,12 +5,8 @@ import pandas as pd
 FEATURES_NUMBER = 18
 
 class WorkloadLogsParser:
-    def __init__(self, filename):
-        self.filename = filename
-        self.train_data = []
-
-    def get_jobs(self, size) -> list[Job]:
-        with open(self.filename, 'r+', encoding='utf-8') as f:
+    def __init__(self, filename, size):
+        with open(filename, 'r+', encoding='utf-8') as f:
             data = f.read().splitlines(True)
             
         data = [ line.replace('\n', '').replace('\t', ' ').split() for line in data if not line.startswith(';')]
@@ -23,11 +19,14 @@ class WorkloadLogsParser:
         np_data = np.delete(np_data, [0, 4, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17], 1)
         df = pd.DataFrame(np_data, columns=labels)
 
-        jobs_to_parse = df.iloc[:size, :]
-        self.train_data = df.iloc[size:, :]
+        self.test_data = df.sample(n=size)
+        self.train_data = df
+
+    def get_jobs(self) -> list[Job]:
         jobs = []
-        for index, row in jobs_to_parse.iterrows():
-            job = Job(row['submit time'], index, row['user id'], row['run time'], row['cpu used'], row['memory used'])
+        min_submit_time = self.test_data['submit time'].min()
+        for index, row in self.test_data.iterrows():
+            job = Job(int((row['submit time'] - min_submit_time)/10000), index, row['user id'], row['run time'], row['cpu used'], row['memory used'])
             jobs.append(job)
 
         return jobs

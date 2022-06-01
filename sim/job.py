@@ -1,3 +1,6 @@
+from multiprocessing.connection import wait
+
+
 class Job:
     def __init__(self, submit_time: int, id: int, user_id: int, estimated_runtime: int, instructions: int, disk_needed: int):
         self.submit_time = submit_time
@@ -11,6 +14,7 @@ class Job:
         self.wait_end_time = None
         self.run_start_time = None
         self.run_end_time = None
+        self.wait_cost = None
     
     # returns True -> if completed, False otherwise
     def execute(self, number_of_instructions: int, current_time: int):
@@ -23,9 +27,10 @@ class Job:
     def start_waiting(self, current_time: int):
         self.wait_start_time = current_time
 
-    def start_executing(self, current_time: int):
+    def start_executing(self, current_time: int, wait_cost: int):
         if self.wait_start_time == None:
             self.wait_start_time = current_time
+        self.wait_cost = wait_cost
         self.wait_end_time = current_time
         self.run_start_time = current_time
 
@@ -33,7 +38,7 @@ class Job:
         return self.instructions - self.completed_instructions
 
     def get_stats(self):
-        return [self.wait_end_time - self.wait_start_time, self.run_end_time - self.run_start_time]
+        return [self.wait_end_time - self.wait_start_time + self.wait_cost, self.run_end_time - self.run_start_time]
 
     def get_submit_time(self):
         return self.submit_time

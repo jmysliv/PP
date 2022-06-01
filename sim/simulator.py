@@ -13,7 +13,7 @@ class Simulator:
         self.current_time = 0
         self.current_job = 0
 
-    def simulate(self):
+    def simulate(self, output):
         while True:
             if len(self.jobs) > self.current_job:
                 job = self.jobs[self.current_job]
@@ -37,13 +37,13 @@ class Simulator:
                     stats.append(job.get_stats())
                 np_stats = np.array(stats)
                 means = np.mean(np_stats, axis=0)
-                fig = plt.figure(figsize=(16, 12))
+                print(means)
+                plt.figure(figsize=(16, 12))
                 plt.title = 'Times'
                 plt.ylabel('Time [s]')
                 plt.bar(['Wait time', 'Run time'], means)
-                plt.savefig(f'outputs/kmeans_times.png')
+                plt.savefig(f'outputs/{output}')
                 plt.close()
                 return
             
             self.current_time += 1
-            print(f'Current time: {self.current_time}')
