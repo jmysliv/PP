@@ -24,9 +24,10 @@ class WorkloadLogsParser:
 
     def get_jobs(self) -> list[Job]:
         jobs = []
-        min_submit_time = self.test_data['submit time'].min()
+        submit_time = 0
         for index, row in self.test_data.iterrows():
-            job = Job(int((row['submit time'] - min_submit_time)/10000), index, row['user id'], row['run time'], row['cpu used'], row['memory used'])
+            job = Job(submit_time, index, row['user id'], row['run time'], row['cpu used'], row['memory used'])
+            submit_time = submit_time + 10
             jobs.append(job)
 
         return jobs
