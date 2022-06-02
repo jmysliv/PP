@@ -19,8 +19,11 @@ class WorkloadLogsParser:
         np_data = np.delete(np_data, [0, 4, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17], 1)
         df = pd.DataFrame(np_data, columns=labels)
 
-        self.test_data = df.sample(n=size)
-        self.train_data = df
+        data = df[df['cpu used'] > 0]
+
+
+        self.test_data = data.sample(n=size)
+        self.train_data = data
 
     def get_jobs(self) -> list[Job]:
         jobs = []

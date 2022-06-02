@@ -14,9 +14,9 @@ class PretrainedManager(Manager):
         self.nodes = nodes
         self.current_index = 0
         self.user_nodes = {}
-        train_dataset = train_dataset[train_dataset['cpu used'] > 0]
-        train_dataset['count'] = train_dataset.groupby('user id')['user id'].transform('count')
-        grouped = train_dataset.groupby('user id').mean()
+        train_data = train_dataset[train_dataset['cpu used'] > 0].copy()
+        train_data['count'] = train_data.groupby('user id')['user id'].transform('count')
+        grouped = train_data.groupby('user id').mean()
         grouped.pop('wait time')
         grouped.pop('submit time')
         grouped.pop('run time')
@@ -32,11 +32,9 @@ class PretrainedManager(Manager):
         # find clusters with the most complex jobs
         max_cpu = 0
         max_index = 0
-        print("cpu used")
         for index, cluster in enumerate(clusters):
-            if cluster.size > 100:
+            if cluster.shape[0] > 100:
                 cpu = cluster['cpu used'].mean()
-                print(cpu)
                 if cpu > max_cpu:
                     max_cpu = cpu
                     max_index = index
@@ -48,11 +46,9 @@ class PretrainedManager(Manager):
         # find clusters with the most frequent jobs
         max_count = 0
         max_count_index = 0
-        print("count")
         for index, cluster in enumerate(clusters):
-            if cluster.size > 100:
+            if cluster.shape[0] > 100:
                 count = cluster['count'].mean()
-                print(count)
                 if count > max_count:
                     max_count = count
                     max_count_index = index
@@ -61,10 +57,6 @@ class PretrainedManager(Manager):
         if max_index != max_count_index:
             for index, _ in clusters[max_count_index].iterrows():
                 self.user_nodes[index] = 0
-
-        print("clusters")
-        for cluster in clusters:
-            print(cluster.size)
 
 
     def find_node(self, job: Job) -> Node:
